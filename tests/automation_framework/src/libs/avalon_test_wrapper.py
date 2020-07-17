@@ -31,10 +31,46 @@ from src.utilities.submit_request_utility import \
     worker_setstatus_sdk, workorder_receiptretrieve_sdk, \
     worker_update_sdk, workorder_getresult_sdk, workorder_receiptlookup_sdk
 from src.utilities.worker_utilities import configure_data
-
+from configparser import ConfigParser
+import yaml
 TCFHOME = os.environ.get("TCF_HOME", "../../")
 logger = logging.getLogger(__name__)
 avalon_lib_instance = AvalonImpl()
+
+def dict_update(input, key, value):
+    if key in input.keys():
+        if type(value) == str: value = yaml.safe_load(value)
+        if value == "remove":
+            del input[key]
+        elif isinstance(value, dict):
+            for n_k, n_v in value.items():
+                if isinstance(n_v, dict):
+                    dict_update(input[key], n_k, n_v)
+                else:
+                    input[key][n_k] = n_v
+        else:
+            input[key] = value
+        return
+    for k, v in input.items():
+        if isinstance(v, dict):
+            dict_update(v, key, value)
+
+
+def read_config(config_file, test_id):
+    parser = ConfigParser()
+    parser.optionxform = lambda option: option
+    parser.read(config_file)
+    test_config = {}
+    for key, value in parser.items("DEFAULT"):
+        test_config[key] = yaml.safe_load(value)
+
+    if parser.has_section(test_id):
+        test_items = list(set(parser.items(test_id)) - set(parser.items("DEFAULT")))
+        for key, value in test_items:
+            dict_update(test_config, key, value)
+    
+    logger.info("Test config is %s\n", test_config)
+    return test_config
 
 
 def read_json(request_file):

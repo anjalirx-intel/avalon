@@ -19,7 +19,7 @@ import env
 from src.utilities.verification_utils \
     import check_worker_lookup_response
 from src.libs.avalon_test_wrapper \
-    import read_json, submit_request
+    import read_json, submit_request, read_config
 from src.utilities.worker_utilities import ResultStatus
 from src.utilities.verification_utils \
     import check_negative_test_responses
@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 class TestClass():
     test_obj = AvalonBase()
+    config_file = os.path.join(env.worker_input_file, "worker_lookup.ini")
 
     @pytest.mark.worker
     @pytest.mark.worker_lookup
@@ -42,18 +43,15 @@ class TestClass():
     @pytest.mark.positive
     def test_worker_lookup_success(self):
         test_id = '18271'
-        request_file = os.path.join(
-            env.worker_input_file,
-            "worker_lookup.json")
 
         err_cd = self.test_obj.setup_and_build_request_lookup(
-            read_json(request_file))
+            read_config(self.config_file, test_id))
 
         response = submit_request(
             self.test_obj.uri_client,
             self.test_obj.build_request_output['request_obj'],
             env.worker_lookup_output_json_file_name,
-            read_json(request_file))
+            read_config(self.config_file, test_id))
 
         logger.info("**********Received Response*********\n%s\n", response)
 
@@ -73,18 +71,15 @@ class TestClass():
     @pytest.mark.ethereum
     def test_worker_lookup_workerType_not_unsigned_int(self):
         test_id = '18275'
-        request_file = os.path.join(
-            env.worker_input_file,
-            "worker_lookup_workerType_not_unsigned_int.json")
 
         err_cd = self.test_obj.setup_and_build_request_lookup(
-            read_json(request_file))
+            read_config(self.config_file, test_id))
 
         response = submit_request(
             self.test_obj.uri_client,
             self.test_obj.build_request_output['request_obj'],
             env.worker_lookup_output_json_file_name,
-            read_json(request_file))
+            read_config(self.config_file, test_id))
 
         logger.info("**********Received Response*********\n%s\n", response)
 
@@ -99,18 +94,15 @@ class TestClass():
     @pytest.mark.listener
     def test_worker_lookup_empty_params(self):
         test_id = '18277'
-        request_file = os.path.join(
-            env.worker_input_file,
-            "worker_lookup_empty_params.json")
 
         err_cd = self.test_obj.setup_and_build_request_lookup(
-            read_json(request_file))
+            read_config(self.config_file, test_id))
 
         response = submit_request(
             self.test_obj.uri_client,
             self.test_obj.build_request_output['request_obj'],
             env.worker_lookup_output_json_file_name,
-            read_json(request_file))
+            read_config(self.config_file, test_id))
 
         logger.info("**********Received Response*********\n%s\n", response)
 
@@ -166,18 +158,15 @@ class TestClass():
     @pytest.mark.negative
     def test_worker_lookup_diff_unit_length(self):
         test_id = '20364'
-        request_file = os.path.join(
-            env.worker_input_file,
-            "worker_lookup_diff_unit_length.json")
 
         err_cd = self.test_obj.setup_and_build_request_lookup(
-            read_json(request_file))
+            read_config(self.config_file, test_id))
 
         response = submit_request(
             self.test_obj.uri_client,
             self.test_obj.build_request_output['request_obj'],
             env.worker_lookup_output_json_file_name,
-            read_json(request_file))
+            read_config(self.config_file, test_id))
 
         logger.info("**********Received Response*********\n%s\n", response)
 
