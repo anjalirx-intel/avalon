@@ -22,7 +22,7 @@ from src.utilities.verification_utils \
     import check_worker_lookup_response, check_worker_retrieve_response, \
     validate_response_code, check_negative_test_responses
 from src.libs.avalon_test_wrapper \
-    import read_json, submit_request
+    import read_json, submit_request, read_config
 from src.utilities.worker_utilities import ResultStatus
 from src.libs.test_base import AvalonBase
 
@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 class TestClass():
     test_obj = AvalonBase()
+    config_file = os.path.join(env.worker_input_file, "worker_retrieve.ini")
 
     @pytest.mark.worker
     @pytest.mark.worker_retrieve
@@ -42,18 +43,15 @@ class TestClass():
     @pytest.mark.positive
     def test_worker_retrieve_success(self):
         test_id = '18273'
-        request_file = os.path.join(
-            env.worker_input_file,
-            "worker_retrieve.json")
 
         err_cd = self.test_obj.setup_and_build_request_retrieve(
-            read_json(request_file))
+            read_config(self.config_file, test_id))
 
         submit_response = submit_request(
             self.test_obj.uri_client,
             self.test_obj.build_request_output['request_obj'],
             env.wo_submit_output_json_file_name,
-            read_json(request_file))
+            read_config(self.config_file, test_id))
 
         assert (check_worker_retrieve_response(submit_response)
                 is ResultStatus.SUCCESS.value)
@@ -76,13 +74,13 @@ class TestClass():
             "worker_retrieve_empty_params.json")
 
         err_cd = self.test_obj.setup_and_build_request_retrieve(
-            read_json(request_file))
+            read_config(self.config_file, test_id))
 
         submit_response = submit_request(
             self.test_obj.uri_client,
             self.test_obj.build_request_output['request_obj'],
             env.wo_submit_output_json_file_name,
-            read_json(request_file))
+            read_config(self.config_file, test_id))
 
         assert (
             check_negative_test_responses(
@@ -103,13 +101,13 @@ class TestClass():
             "workerretrieve_params_unknownparameter.json")
 
         err_cd = self.test_obj.setup_and_build_request_retrieve(
-            read_json(request_file))
+            read_config(self.config_file, test_id))
 
         submit_response = submit_request(
             self.test_obj.uri_client,
             self.test_obj.build_request_output['request_obj'],
             env.wo_submit_output_json_file_name,
-            read_json(request_file))
+            read_config(self.config_file, test_id))
 
         assert (
             check_negative_test_responses(

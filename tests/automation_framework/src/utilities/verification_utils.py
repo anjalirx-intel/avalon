@@ -145,7 +145,10 @@ def verify_test(response, expected_res, worker_obj, work_order_obj):
         requester_nonce = work_order_obj["requesterNonce"]
 
     outData = response.get("result", {}).get("outData", [])
-    decode_result =  all([x.get("encryptedDataEncryptionKey") == "-" for x in outData])
+    if len(outData) > 1:
+        decode_result = all([x.get("encryptedDataEncryptionKey") == "-" for x in outData])
+    else:
+        decode_result = False
     if decode_result:
         decode_wo_response_err = decode_work_order_response(outData)[0]
 
